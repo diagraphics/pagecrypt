@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             pwd.value = query.get("pwd")!
             query.delete("pwd");
 
-            const newHash = pseudoURL.href.slice(10);
+            const newHash = pseudoURL.href.slice(5);
             url.hash = newHash;
         } else if (
             /* Hash is neither query-like not path-like */
