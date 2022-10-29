@@ -12,13 +12,15 @@
         "build:lib": "node ./scripts/esbuild.js",
         "dev:web": "vite",
         "build:web": "vite build && node scripts/postbuild.js",
-        "serve:web": "vite preview"
+        "serve:web": "vite preview",
+        "prepack": "npm run build && cd dist"
     },
     "author": "Samuel Plumppu",
     "license": "MIT",
     "dependencies": {
         "rfc4648": "^1.5.1",
-        "sade": "^1.8.1"
+        "sade": "^1.8.1",
+        "query-string": "^7.1.1"
     },
     "devDependencies": {
         "@types/fs-extra": "^9.0.13",

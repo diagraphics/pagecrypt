@@ -1,4 +1,5 @@
 import { base64 } from 'rfc4648'
+import queryString from "query-string";
 
 const find = document.querySelector.bind(document)
 const [pwd, header, msg, form, load] = [
@@ -30,15 +31,24 @@ document.addEventListener('DOMContentLoaded', async () => {
      * This greatly improves UX by clicking links instead of having to copy and paste the password manually.
      * It also does not compromise security since the URI Fragment is not sent across the internet.
      * Additionally, we delete the URI Fragment from the browser address field when the page is loaded.
-     * 
+     *
      * NOTE: However, beware that the password remains as a history entry if you use magic links!
      * Feel free to submit a PR if you know a workaround for this.
      */
-    if (location.hash) {
-        const url = new URL(window.location.href)
-        pwd.value = url.hash.slice(1)
-        url.hash = ''
-        history.replaceState(null, '', url.toString())
+    if (window.location.hash) {
+        const hash = window.location.hash
+        const query = hash.split("?")[1] ?? hash;
+
+        if (typeof query === "string") {
+            const parsedQuery = queryString.parse(query);
+
+            if ("pwd" in parsedQuery) {
+                pwd.value = parsedQuery.pwd
+            }
+        }
+
+        /* url.hash = ''
+        history.replaceState(null, '', url.toString()) */
     }
 
     if (sessionStorage.k || pwd.value) {
