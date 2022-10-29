@@ -1,5 +1,6 @@
 import { base64 } from 'rfc4648'
 import queryString from "query-string";
+import { url } from 'inspector';
 
 const find = document.querySelector.bind(document)
 const [pwd, header, msg, form, load] = [
@@ -27,6 +28,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
     /**
+     * TODO: Revise this comment
+     *
      * Allow passwords to be automatically provided via the URI Fragment.
      * This greatly improves UX by clicking links instead of having to copy and paste the password manually.
      * It also does not compromise security since the URI Fragment is not sent across the internet.
@@ -34,21 +37,35 @@ document.addEventListener('DOMContentLoaded', async () => {
      *
      * NOTE: However, beware that the password remains as a history entry if you use magic links!
      * Feel free to submit a PR if you know a workaround for this.
+     *
+     * SEE: https://stackoverflow.com/questions/26793130/history-replacestate-still-adds-entries-to-the-browsing-history
+     *
      */
     if (window.location.hash) {
-        const hash = window.location.hash
-        const query = hash.split("?")[1] ?? hash;
+        const url = new URL(window.location.href);
+        const hash = url.hash.slice(1)
 
-        if (typeof query === "string") {
-            const parsedQuery = queryString.parse(query);
+        /* Hack to use URL to parse just a query-stringlike */
+        const infix = hash.includes("=") && !hash.includes("?") ? "?" : "";
+        const pseudoURL = new URL("hash:" + infix + hash);
+        const query = pseudoURL.searchParams;
 
-            if ("pwd" in parsedQuery) {
-                pwd.value = parsedQuery.pwd
-            }
+        if (query.has("pwd")) {
+            pwd.value = query.get("pwd")!
+            query.delete("pwd");
+
+            const newHash = pseudoURL.href.slice(10);
+            url.hash = newHash;
+        } else if (
+            /* Hash is neither query-like not path-like */
+            !pseudoURL.search &&
+            !pseudoURL.pathname.includes("/")
+        ) {
+            pwd.value = hash;
+            url.hash = '';
         }
 
-        /* url.hash = ''
-        history.replaceState(null, '', url.toString()) */
+        history.replaceState(null, "", url.toString())
     }
 
     if (sessionStorage.k || pwd.value) {
