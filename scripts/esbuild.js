@@ -41,7 +41,7 @@ esbuild
         await copy(declarationsDir, distDir)
         await remove(declarationsDir)
 
-        await Promise.all([
+        /* await Promise.all([
             copy('./LICENSE.md', resolve(distDir, 'LICENSE.md')),
             copy('./CHANGELOG.md', resolve(distDir, 'CHANGELOG.md')),
             copy('./README.md', resolve(distDir, 'README.md')),
@@ -70,7 +70,7 @@ esbuild
 
         await writeJson(resolve(distDir, 'package.json'), distPackage, {
             spaces: 4,
-        })
+        }) */
 
         const buildTime = (
             (performance.now() - startTime) /
